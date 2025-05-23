@@ -1,0 +1,1 @@
+PACKAGE_NAME = "ros2_robot_ur5e"

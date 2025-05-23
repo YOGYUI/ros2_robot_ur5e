@@ -57,5 +57,24 @@ Prerequisite
 - Misc ROS Packages
     ```shell
     $ sudo apt install -y \
-        ros-${ROS_DISTRO}-joint-state-publisher-gui
+        ros-${ROS_DISTRO}-joint-state-publisher-gui \
+        ros-${ROS_DISTRO}-rqt-joint-trajectory-controller
     ```
+
+How to Use?
+---
+1. Clone repository
+```shell
+$ mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+$ git clone https://github.com/YOGYUI/ros2_robot_ur5e.git
+```
+2. Build package
+```shell
+$ cd ~/ros2_ws
+$ colcon build --packages-select ros2_robot_ur5e --symlink-install
+$ source ~/ros2_ws/install/local_setup.bash
+```
+3. Launch
+```shell
+$ ros2 launch ros2_robot_ur5e robot.launch.py
+```

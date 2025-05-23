@@ -18,12 +18,16 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(robot_state_publisher REQUIRED)
+find_package(gz_ros2_control REQUIRED)
+find_package(control_msgs REQUIRED)
 
 install(DIRECTORY 
+  config
   description
   launch
   meshes
   scripts
+  worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
