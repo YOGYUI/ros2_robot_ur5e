@@ -2,17 +2,27 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur5e">
     <link name="world" />
 
-    <xacro:arg name="joint_limit_file" default="$(find ros2_robot_ur5e)/config/joint_limits.yaml"/>
-    <xacro:arg name="initial_positions_file" default="$(find ros2_robot_ur5e)/config/initial_positions.yaml"/>
-    <xacro:arg name="ur_calibration_file" default="$(find ros2_robot_ur5e)/config/ur_calibration.yaml"/>
+    <xacro:arg name="namespace" default="" />
+    <xacro:arg name="tf_prefix" default="" />
+    <xacro:arg name="joint_limit_file" default="$(find ros2_robot_ur5e)/config/joint_limits.yaml" />
+    <xacro:arg name="initial_positions_file" default="$(find ros2_robot_ur5e)/config/initial_positions.yaml" />
+    <xacro:arg name="ur_calibration_file" default="$(find ros2_robot_ur5e)/config/ur_calibration.yaml" />
 
-    <xacro:include filename="robot.ur5e.xacro"/>
+    <xacro:include filename="ur5e.urdf.xacro" />
     <xacro:urdf_args 
+        tf_prefix="$(arg tf_prefix)"
+        base_xyz="0 0 0"
+        base_rpy="0 0 0"
         joint_limit_file="$(arg joint_limit_file)"
         ur_calibration_file="$(arg ur_calibration_file)" />
 
-    <xacro:include filename="robot.control.xacro"/>
+    <xacro:include filename="ur5e.control.xacro" />
     <xacro:control_args 
+        tf_prefix="$(arg tf_prefix)"
         initial_positions_file="$(arg initial_positions_file)" />
+
+    <xacro:include filename="gazebo.xacro" />
+    <xacro:gz_args
+        namespace="$(arg namespace)" />
 
 </robot>

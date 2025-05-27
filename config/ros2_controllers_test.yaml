@@ -1,0 +1,79 @@
+/**:
+  controller_manager:
+    ros__parameters:
+      update_rate: 500  # Hz
+    
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      
+      left_joint_trajectory_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+      
+      right_joint_trajectory_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+/**:
+  left_joint_trajectory_controller:
+    ros__parameters:
+      joints:
+        - left_joint_shoulder_pan
+        - left_joint_shoulder_lift
+        - left_joint_elbow
+        - left_joint_wrist_1
+        - left_joint_wrist_2
+        - left_joint_wrist_3
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+        - velocity
+      state_publish_rate: 100.0
+      action_monitor_rate: 20.0
+      allow_partial_joints_goal: false
+      allow_integration_in_goal_trajectories: true
+      start_with_holding: false
+      allow_nonzero_velocity_at_trajectory_end: false
+      interpolate_from_desired_state: true
+      cmd_timeout: 0.0
+      constraints:
+        stopped_velocity_tolerance: 0.2
+        goal_time: 0.0
+        left_joint_shoulder_pan: { trajectory: 0.0, goal: 0.01 }
+        left_joint_shoulder_lift: { trajectory: 0.0, goal: 0.01 }
+        left_joint_elbow: { trajectory: 0.0, goal: 0.01 }
+        left_joint_wrist_1: { trajectory: 0.0, goal: 0.01 }
+        left_joint_wrist_2: { trajectory: 0.0, goal: 0.01 }
+        left_joint_wrist_3: { trajectory: 0.0, goal: 0.01 }
+
+/**:
+  right_joint_trajectory_controller:
+    ros__parameters:
+      joints:
+        - right_joint_shoulder_pan
+        - right_joint_shoulder_lift
+        - right_joint_elbow
+        - right_joint_wrist_1
+        - right_joint_wrist_2
+        - right_joint_wrist_3
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+        - velocity
+      state_publish_rate: 100.0
+      action_monitor_rate: 20.0
+      allow_partial_joints_goal: false
+      allow_integration_in_goal_trajectories: true
+      start_with_holding: false
+      allow_nonzero_velocity_at_trajectory_end: false
+      interpolate_from_desired_state: true
+      cmd_timeout: 0.0
+      constraints:
+        stopped_velocity_tolerance: 0.2
+        goal_time: 0.0
+        right_joint_shoulder_pan: { trajectory: 0.0, goal: 0.01 }
+        right_joint_shoulder_lift: { trajectory: 0.0, goal: 0.01 }
+        right_joint_elbow: { trajectory: 0.0, goal: 0.01 }
+        right_joint_wrist_1: { trajectory: 0.0, goal: 0.01 }
+        right_joint_wrist_2: { trajectory: 0.0, goal: 0.01 }
+        right_joint_wrist_3: { trajectory: 0.0, goal: 0.01 }

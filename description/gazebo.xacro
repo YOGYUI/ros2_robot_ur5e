@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="gz_args" params="namespace">
+
+        <gazebo>
+            <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
+                <robot_param>robot_description</robot_param>
+                <robot_param_node>robot_state_publisher</robot_param_node>
+                <parameters>$(find ros2_robot_ur5e)/config/ros2_controllers.yaml</parameters>
+                <parameters>$(find ros2_robot_ur5e)/config/gz_sim_config.yaml</parameters>
+                <ros>
+                    <namespace>${namespace}</namespace>
+                    <remapping>/controller_manager/robot_description:=robot_description</remapping>
+                </ros>
+            </plugin>
+        </gazebo>
+
+    </xacro:macro>
+
+</robot>

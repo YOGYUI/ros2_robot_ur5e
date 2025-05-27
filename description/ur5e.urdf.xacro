@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="urdf_args" params="joint_limit_file ur_calibration_file">
+    <xacro:macro name="urdf_args" params="
+        tf_prefix base_xyz base_rpy joint_limit_file ur_calibration_file">
 
         <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limit_file)}"/>
         <xacro:property name="limit_shoulder" value="${joint_limits['joint_limits']['joint_shoulder_pan']}"/>
@@ -18,12 +19,12 @@
         <xacro:property name="origin_wrist_2" value="${calibration['kinematics']['wrist_2']}"/>
         <xacro:property name="origin_wrist_3" value="${calibration['kinematics']['wrist_3']}"/>
 
-        <joint name="joint_base" type="fixed">
+        <joint name="${tf_prefix}joint_base" type="fixed">
             <parent link="world" />
-            <child link="link_base" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <child link="${tf_prefix}link_base" />
+            <origin xyz="${base_xyz}" rpy="${base_rpy}" />
         </joint>
-        <link name="link_base">
+        <link name="${tf_prefix}link_base">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 ${pi}" />
                 <geometry>
@@ -46,9 +47,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_shoulder_pan" type="revolute">
-            <parent link="link_base" />
-            <child link="link_shoulder" />
+        <joint name="${tf_prefix}joint_shoulder_pan" type="revolute">
+            <parent link="${tf_prefix}link_base" />
+            <child link="${tf_prefix}link_shoulder" />
             <origin xyz="${origin_shoulder['x']} ${origin_shoulder['y']} ${origin_shoulder['z']}" 
                     rpy="${origin_shoulder['roll']} ${origin_shoulder['pitch']} ${origin_shoulder['yaw']}" />
             <axis xyz="0 0 1" />
@@ -56,7 +57,7 @@
                    effort="${limit_shoulder['max_effort']}" velocity="${limit_shoulder['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_shoulder">
+        <link name="${tf_prefix}link_shoulder">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 ${pi}" />
                 <geometry>
@@ -79,9 +80,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_shoulder_lift" type="revolute">
-            <parent link="link_shoulder" />
-            <child link="link_upper_arm" />
+        <joint name="${tf_prefix}joint_shoulder_lift" type="revolute">
+            <parent link="${tf_prefix}link_shoulder" />
+            <child link="${tf_prefix}link_upper_arm" />
             <origin xyz="${origin_upper_arm['x']} ${origin_upper_arm['y']} ${origin_upper_arm['z']}" 
                     rpy="${origin_upper_arm['roll']} ${origin_upper_arm['pitch']} ${origin_upper_arm['yaw']}" />
             <axis xyz="0 0 1" />
@@ -89,7 +90,7 @@
                    effort="${limit_upper_arm['max_effort']}" velocity="${limit_upper_arm['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_upper_arm">
+        <link name="${tf_prefix}link_upper_arm">
             <visual>
                 <origin xyz="0 0 0.138" rpy="${pi/2} 0 ${-pi/2}" />
                 <geometry>
@@ -112,9 +113,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_elbow" type="revolute">
-            <parent link="link_upper_arm" />
-            <child link="link_forearm" />
+        <joint name="${tf_prefix}joint_elbow" type="revolute">
+            <parent link="${tf_prefix}link_upper_arm" />
+            <child link="${tf_prefix}link_forearm" />
             <origin xyz="${origin_forearm['x']} ${origin_forearm['y']} ${origin_forearm['z']}" 
                     rpy="${origin_forearm['roll']} ${origin_forearm['pitch']} ${origin_forearm['yaw']}" />
             <axis xyz="0 0 1" />
@@ -122,7 +123,7 @@
                    effort="${limit_forearm['max_effort']}" velocity="${limit_forearm['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_forearm">
+        <link name="${tf_prefix}link_forearm">
             <visual>
                 <origin xyz="0 0 0.007" rpy="${pi/2} 0 ${-pi/2}" />
                 <geometry>
@@ -145,9 +146,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_wrist_1" type="revolute">
-            <parent link="link_forearm" />
-            <child link="link_wrist_1" />
+        <joint name="${tf_prefix}joint_wrist_1" type="revolute">
+            <parent link="${tf_prefix}link_forearm" />
+            <child link="${tf_prefix}link_wrist_1" />
             <origin xyz="${origin_wrist_1['x']} ${origin_wrist_1['y']} ${origin_wrist_1['z']}" 
                     rpy="${origin_wrist_1['roll']} ${origin_wrist_1['pitch']} ${origin_wrist_1['yaw']}" />
             <axis xyz="0 0 1" />
@@ -155,7 +156,7 @@
                    effort="${limit_wrist_1['max_effort']}" velocity="${limit_wrist_1['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_wrist_1">
+        <link name="${tf_prefix}link_wrist_1">
             <visual>
                 <origin xyz="0 0 -0.127" rpy="${pi/2} 0 0" />
                 <geometry>
@@ -178,9 +179,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_wrist_2" type="revolute">
-            <parent link="link_wrist_1" />
-            <child link="link_wrist_2" />
+        <joint name="${tf_prefix}joint_wrist_2" type="revolute">
+            <parent link="${tf_prefix}link_wrist_1" />
+            <child link="${tf_prefix}link_wrist_2" />
             <origin xyz="${origin_wrist_2['x']} ${origin_wrist_2['y']} ${origin_wrist_2['z']}" 
                     rpy="${origin_wrist_2['roll']} ${origin_wrist_2['pitch']} ${origin_wrist_2['yaw']}" />
             <axis xyz="0 0 1" />
@@ -188,7 +189,7 @@
                    effort="${limit_wrist_2['max_effort']}" velocity="${limit_wrist_2['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_wrist_2">
+        <link name="${tf_prefix}link_wrist_2">
             <visual>
                 <origin xyz="0 0 -0.0997" rpy="0 0 0" />
                 <geometry>
@@ -211,9 +212,9 @@
             </inertial>
         </link>
 
-        <joint name="joint_wrist_3" type="revolute">
-            <parent link="link_wrist_2" />
-            <child link="link_wrist_3" />
+        <joint name="${tf_prefix}joint_wrist_3" type="revolute">
+            <parent link="${tf_prefix}link_wrist_2" />
+            <child link="${tf_prefix}link_wrist_3" />
             <origin xyz="${origin_wrist_3['x']} ${origin_wrist_3['y']} ${origin_wrist_3['z']}" 
                     rpy="${origin_wrist_3['roll']} ${origin_wrist_3['pitch']} ${origin_wrist_3['yaw']}" />
             <axis xyz="0 0 1" />
@@ -221,7 +222,7 @@
                    effort="${limit_wrist_3['max_effort']}" velocity="${limit_wrist_3['max_velocity']}" />
             <dynamics damping="0" friction="0" />
         </joint>
-        <link name="link_wrist_3">
+        <link name="${tf_prefix}link_wrist_3">
             <visual>
                 <origin xyz="0 0 -0.0989" rpy="${pi/2} 0 0" />
                 <geometry>
@@ -244,26 +245,26 @@
             </inertial>
         </link>
 
-        <joint name="joint_ft_frame" type="fixed">
-            <parent link="link_wrist_3" />
-            <child link="link_ft_frame" />
+        <joint name="${tf_prefix}joint_ft_frame" type="fixed">
+            <parent link="${tf_prefix}link_wrist_3" />
+            <child link="${tf_prefix}link_ft_frame" />
             <origin xyz="0 0 0" rpy="${pi} 0 0" />
         </joint>
-        <link name="link_ft_frame" />
+        <link name="${tf_prefix}link_ft_frame" />
 
-        <joint name="joint_flange" type="fixed">
-            <parent link="link_wrist_3" />
-            <child link="link_flange" />
+        <joint name="${tf_prefix}joint_flange" type="fixed">
+            <parent link="${tf_prefix}link_wrist_3" />
+            <child link="${tf_prefix}link_flange" />
             <origin xyz="0 0 0" rpy="0 ${-pi/2} ${-pi/2}" />
         </joint>
-        <link name="link_flange" />
+        <link name="${tf_prefix}link_flange" />
 
-        <joint name="joint_tool0" type="fixed">
-            <parent link="link_flange" />
+        <joint name="${tf_prefix}joint_tool0" type="fixed">
+            <parent link="${tf_prefix}link_flange" />
             <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
-            <child link="link_tool0" />
+            <child link="${tf_prefix}link_tool0" />
         </joint>
-        <link name="link_tool0" />
+        <link name="${tf_prefix}link_tool0" />
 
     </xacro:macro>
 

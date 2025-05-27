@@ -5,7 +5,7 @@
     <version>0.0.1</version>
     <description>YOGYUI ROS2 Project - Universal Robots UR5e</description>
     <maintainer email="lee2002w@gmail.com">seung-hee.lee</maintainer>
-    <author email="dennis.lee@kohyoung.com">seung-hee.lee</author>
+    <author email="lee2002w@gmail.com">seung-hee.lee</author>
     <license>MIT License</license>
     
     <buildtool_depend>ament_cmake</buildtool_depend>

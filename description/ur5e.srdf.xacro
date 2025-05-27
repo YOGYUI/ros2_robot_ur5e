@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="srdf_args" params="tf_prefix">
+
+        <group name="${tf_prefix}manipulator">
+            <chain base_link="${tf_prefix}link_base" tip_link="${tf_prefix}link_tool0"/>
+        </group>
+
+        <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="${tf_prefix}link_base"/>
+
+        <disable_collisions link1="${tf_prefix}link_base" link2="${tf_prefix}link_shoulder" reason="Adjacent"/>
+        <disable_collisions link1="${tf_prefix}link_forearm" link2="${tf_prefix}link_upper_arm" reason="Adjacent"/>
+        <disable_collisions link1="${tf_prefix}link_forearm" link2="${tf_prefix}link_wrist_1" reason="Adjacent"/>
+        <disable_collisions link1="${tf_prefix}link_forearm" link2="${tf_prefix}link_wrist_2" reason="Never"/>
+        <disable_collisions link1="${tf_prefix}link_shoulder" link2="${tf_prefix}link_upper_arm" reason="Adjacent"/>
+        <disable_collisions link1="${tf_prefix}link_wrist_1" link2="${tf_prefix}link_wrist_2" reason="Adjacent"/>
+        <disable_collisions link1="${tf_prefix}link_wrist_1" link2="${tf_prefix}link_wrist_3" reason="Never"/>
+        <disable_collisions link1="${tf_prefix}link_wrist_2" link2="${tf_prefix}link_wrist_3" reason="Adjacent"/>
+
+    </xacro:macro>
+</robot>

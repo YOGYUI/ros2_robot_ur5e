@@ -1,22 +1,27 @@
 import os
-import xacro
-from launch import LaunchDescription
+import sys
+from typing import List
+CURPATH = os.path.dirname(os.path.abspath(__file__))
+sys.path.extend([CURPATH])
+sys.path = list(set(sys.path))
+from launch import LaunchDescription, Action, LaunchContext
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
-from common_definition import PACKAGE_NAME
+from launch.actions import OpaqueFunction
+from launch.substitutions import LaunchConfiguration, NotSubstitution
+from common_definition import *
 
 
-def generate_launch_description() -> LaunchDescription:
-    launch_description = LaunchDescription()
+def declare_launch_arguments(launch_description: LaunchDescription):
+    declare_common_launch_arguments(launch_description)
+    launch_description.add_action(DeclareLaunchArgument(
+        "robot_state_publish_frequency",
+        default_value="50.0",
+        description="Robot state publisher node's topic publish rate (Hz)"))
 
-    pkg_share_dir = get_package_share_directory(PACKAGE_NAME)
-    urdf_path = os.path.join(pkg_share_dir, "description", "robot.urdf.xacro")
-    mappings = {
-        "joint_limit_file": os.path.join(pkg_share_dir, "config", "joint_limits.yaml"),
-        "initial_positions_file": os.path.join(pkg_share_dir, "config", "initial_positions.yaml"), 
-        "ur_calibration_file": os.path.join(pkg_share_dir, "config", "ur_calibration.yaml"),
-    }
-    robot_description = xacro.process_file(urdf_path, mappings=mappings).toprettyxml()
+
+def create_rsp_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
+    moveit_config_builder = get_moveit_config_builder()
+    moveit_config = moveit_config_builder.to_moveit_configs()
 
     rsp_launch_node = Node(
         package="robot_state_publisher",
@@ -25,15 +30,26 @@ def generate_launch_description() -> LaunchDescription:
         output="screen",
         arguments=[],
         parameters=[
+            moveit_config.robot_description,
             {
-                "robot_description": robot_description,
-                "publish_frequency": 50.0,
-                "use_sim_time": True
+                "publish_frequency": LaunchConfiguration("robot_state_publish_frequency"),
+                "use_sim_time": NotSubstitution(LaunchConfiguration("real_hw"))
             }
         ],
-        remappings=[]
+        remappings=[
+            ("/tf", "tf"),
+            ("/tf_static", "tf_static"),
+        ],
+        namespace=LaunchConfiguration("namespace"),
     )
+    return [rsp_launch_node]
+
+
+def generate_launch_description() -> LaunchDescription:
+    launch_description = LaunchDescription()
+    declare_launch_arguments(launch_description)
     
-    launch_description.add_action(rsp_launch_node)
+    launch_description.add_action(OpaqueFunction(
+        function=create_rsp_action))
 
     return launch_description
