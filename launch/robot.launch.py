@@ -61,4 +61,13 @@ def generate_launch_description() -> LaunchDescription:
         )
     )
 
+    # launch real-hardware related packages
+    launch_description.add_action(
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(pkg_share_dir, "launch/modules/hardware.launch.py"),
+            ),
+        )
+    )
+
     return launch_description

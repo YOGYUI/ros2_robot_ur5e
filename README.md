@@ -1,9 +1,11 @@
 # ROS2 Project - Universal Robots UR5e
-ROS2 Project - Control and Simulate **Universal Robotics UR5e** Robot Platform
+![title](/resources/title.png)
+Control and Simulate Universal Robots `UR5e` Robot Platform with ROS2.
 
 Prerequisite
 ---
 - Ubuntu `Novel 24.04.x` LTS
+- Linux Real-Time Kernel (PREEMPT_RT)
 - ROS2 `Jazzy Jalisco` ([Official Guide](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html))
     ```shell
     $ sudo apt update && sudo apt install locales
@@ -64,17 +66,56 @@ Prerequisite
 How to Use?
 ---
 1. Clone repository
-```shell
-$ mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
-$ git clone https://github.com/YOGYUI/ros2_robot_ur5e.git
-```
+    ```shell
+    $ mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+    $ git clone https://github.com/YOGYUI/ros2_robot_ur5e.git
+    ```
 2. Build package
-```shell
-$ cd ~/ros2_ws
-$ colcon build --packages-select ros2_robot_ur5e --symlink-install
-$ source ~/ros2_ws/install/local_setup.bash
-```
+    ```shell
+    $ cd ~/ros2_ws
+    $ colcon build --packages-select ros2_robot_ur5e --symlink-install
+    $ source ~/ros2_ws/install/local_setup.bash
+    ```
 3. Launch
-```shell
-$ ros2 launch ros2_robot_ur5e robot.launch.py
-```
+    ```shell
+    $ ros2 launch ros2_robot_ur5e robot.launch.py [real_hw:=true/false] [launch_gazebo:=true/false] [launch_rviz:=true/false]
+    ```
+    - Simulation (gazebo)
+        ```shell
+        $ ros2 launch ros2_robot_ur5e robot.launch.py real_hw:=false launch_gazebo:=true
+        ```
+        ![gazebo_simulation](/resources/gazebo_simulation.gif)
+    - Real Hardware (UR5e)
+        ```shell
+        $ ros2 launch ros2_robot_ur5e robot.launch.py real_hw:=true
+        ```
+4. UR5e Configuration
+    - Get calibration kinematics from robot
+        ```shell
+        $ ros2 launch ur_calibration calibration_correction.launch.py \
+        robot_ip:=<robot_ip> \
+        target_filename:="${HOME}/ros2_ws/src/ros2_robot_ur5e/config/ur_calibration.yaml"
+        ```
+
+Additional Setting for Real-Time Environment
+---
+Reference Link: [Setup for real-time scheduling](https://docs.universal-robots.com/Universal_Robots_ROS_Documentation/doc/ur_client_library/doc/real_time.html)<br>
+`Notes`: PREEMPT_RT Real-Time Linux Kernel should be installed first.
+1. Install low latency kernel
+    ```shell
+    $ sudo apt install linux-lowlatency
+    ```
+2. Setup user privileges
+    ```shell
+    $ sudo groupadd realtime
+    $ sudo usermod -aG realtime $(whoami)
+    ```
+    open `/etc/security/limits.conf` and add below lines.
+    ```
+    @realtime soft rtprio 99
+    @realtime soft priority 99
+    @realtime soft memlock 102400
+    @realtime hard rtprio 99
+    @realtime hard priority 99
+    @realtime hard memlock 102400
+    ```

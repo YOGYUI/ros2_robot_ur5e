@@ -78,7 +78,7 @@ def create_move_group_action(context: LaunchContext, *args, **kwargs) -> List[Ac
         "trajectory_execution.allowed_execution_duration_scaling": 1.2,
         "trajectory_execution.allowed_goal_duration_margin": 0.5,
         "trajectory_execution.allowed_start_tolerance": 0.01,
-        "trajectory_execution.execution_duration_monitoring": True,
+        "trajectory_execution.execution_duration_monitoring": False,
     }
 
     planning_scene_monitor_parameters = {
@@ -100,6 +100,11 @@ def create_move_group_action(context: LaunchContext, *args, **kwargs) -> List[Ac
     robot_description_planning = {"robot_description_planning": moveit_config_dict["robot_description_planning"]}
 
     moveit_simple_controller_manager = moveit_config_dict["moveit_simple_controller_manager"]
+    real_hw = context.perform_substitution(LaunchConfiguration("real_hw")).lower()
+    if real_hw != "true":
+        moveit_simple_controller_manager["scaled_joint_trajectory_controller"]["default"] = False
+        moveit_simple_controller_manager["joint_trajectory_controller"]["default"] = True
+        trajectory_execution["trajectory_execution.execution_duration_monitoring"] = True
     moveit_controllers = {
         "moveit_simple_controller_manager": moveit_simple_controller_manager,
         "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",

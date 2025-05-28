@@ -20,6 +20,9 @@ find_package(rclcpp_components REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 find_package(gz_ros2_control REQUIRED)
 find_package(control_msgs REQUIRED)
+find_package(ur_robot_driver REQUIRED)
+find_package(ur_client_library REQUIRED)
+find_package(ur_dashboard_msgs REQUIRED)
 
 install(DIRECTORY 
   config

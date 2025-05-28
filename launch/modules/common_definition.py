@@ -37,9 +37,11 @@ def get_moveit_config_builder(force_init: bool = True) -> MoveItConfigsBuilder:
             mappings={
                 "namespace": LaunchConfiguration("namespace"),
                 "tf_prefix": LaunchConfiguration("tf_prefix"),
+                "real_hw": LaunchConfiguration("real_hw"),
                 "joint_limit_file": os.path.join(pkg_share_dir, "config", "joint_limits.yaml"),
                 "initial_positions_file": os.path.join(pkg_share_dir, "config", "initial_positions.yaml"), 
                 "ur_calibration_file": os.path.join(pkg_share_dir, "config", "ur_calibration.yaml"),
+                "ur_control_file": os.path.join(pkg_share_dir, "config", "ur_control.yaml"),
             }
         )
 

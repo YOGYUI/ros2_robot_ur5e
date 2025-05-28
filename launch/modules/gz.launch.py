@@ -10,7 +10,7 @@ from launch.actions import OpaqueFunction, IncludeLaunchDescription, RegisterEve
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, NotSubstitution, AndSubstitution
-from launch.event_handlers import OnProcessExit
+from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch.conditions import IfCondition
 from common_definition import *
 
@@ -24,7 +24,7 @@ def declare_launch_arguments(launch_description: LaunchDescription):
         description="Launch Gazebo."))
 
 
-def create_gz_sim_server_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
+def create_gz_sim_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
     pkg_share_dir = get_package_share_directory(PACKAGE_NAME)
     default_world_path = os.path.join(pkg_share_dir, "worlds", "default.world")
     ros_gz_sim_path = get_package_share_directory('ros_gz_sim')
@@ -47,31 +47,6 @@ def create_gz_sim_server_action(context: LaunchContext, *args, **kwargs) -> List
         ),
     )
 
-    # kill ruby process
-    script_path = os.path.join(pkg_share_dir, "scripts", "python", "kill_process_ruby.py")
-    process = ExecuteProcess(
-        cmd=['python3', script_path],
-        output='screen',
-        name='kill-proc-ruby'
-    )
-
-    ev_hander = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=process,
-            on_exit=[launch_gz_server],
-        ),
-        condition=IfCondition(AndSubstitution(
-            NotSubstitution(LaunchConfiguration("real_hw")),
-            LaunchConfiguration("launch_gazebo"))
-        ),
-    )
-
-    return [process, ev_hander]
-
-
-def create_gz_sim_client_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
-    ros_gz_sim_path = get_package_share_directory('ros_gz_sim')
-
     # -g: run just the GUI client.
     launch_gz_client = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -85,8 +60,42 @@ def create_gz_sim_client_action(context: LaunchContext, *args, **kwargs) -> List
             LaunchConfiguration("launch_gazebo"))
         ),
     )
-    
-    return [launch_gz_client]
+
+    # kill ruby process
+    script_path = os.path.join(pkg_share_dir, "scripts", "python", "kill_process_ruby.py")
+    process = ExecuteProcess(
+        cmd=['python3', script_path],
+        output='screen',
+        name='kill-proc-ruby',
+        condition=IfCondition(AndSubstitution(
+            NotSubstitution(LaunchConfiguration("real_hw")),
+            LaunchConfiguration("launch_gazebo"))
+        ),
+    )
+
+    ev_hander1 = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=process,
+            on_exit=[launch_gz_server],
+        ),
+        condition=IfCondition(AndSubstitution(
+            NotSubstitution(LaunchConfiguration("real_hw")),
+            LaunchConfiguration("launch_gazebo"))
+        ),
+    )
+
+    ev_hander2 = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=process,
+            on_exit=[launch_gz_client],
+        ),
+        condition=IfCondition(AndSubstitution(
+            NotSubstitution(LaunchConfiguration("real_hw")),
+            LaunchConfiguration("launch_gazebo"))
+        ),
+    )
+
+    return [process, ev_hander1, ev_hander2]
 
 
 def create_ros_gz_bridge_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
@@ -118,9 +127,7 @@ def generate_launch_description() -> LaunchDescription:
     declare_launch_arguments(launch_description)
     
     launch_description.add_action(OpaqueFunction(
-        function=create_gz_sim_server_action))
-    launch_description.add_action(OpaqueFunction(
-        function=create_gz_sim_client_action))
+        function=create_gz_sim_action))
     launch_description.add_action(OpaqueFunction(
         function=create_ros_gz_bridge_action))
     

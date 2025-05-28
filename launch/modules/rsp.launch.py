@@ -42,6 +42,7 @@ def create_rsp_action(context: LaunchContext, *args, **kwargs) -> List[Action]:
         ],
         namespace=LaunchConfiguration("namespace"),
     )
+    
     return [rsp_launch_node]
 
 

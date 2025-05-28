@@ -1,73 +1,114 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="control_args" params="tf_prefix initial_positions_file">
+    <xacro:macro name="ur5e_control_args" params="
+        tf_prefix real_hw initial_positions_file ur_calibration_file ur_control_file">
 
-        <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)}"/>
+        <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)}" />
+        <xacro:property name="calibration" value="${xacro.load_yaml(ur_calibration_file)}" />
+        <xacro:property name="ur_control" value="${xacro.load_yaml(ur_control_file)}" />
 
         <ros2_control name="${tf_prefix}control" type="system">
             <hardware>
-                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                <xacro:if value="${real_hw}">
+                    <plugin>ur_robot_driver/URPositionHardwareInterface</plugin>
+                    <param name="robot_ip">${ur_control['robot_ip']}</param>
+                    <param name="script_filename">${ur_control['script_filename']}</param>
+                    <param name="output_recipe_filename">${ur_control['output_recipe_filename']}</param>
+                    <param name="input_recipe_filename">${ur_control['input_recipe_filename']}</param>
+                    <param name="headless_mode">${ur_control['headless_mode']}</param>
+                    <param name="reverse_port">${ur_control['reverse_port']}</param>
+                    <param name="script_sender_port">${ur_control['script_sender_port']}</param>
+                    <param name="reverse_ip">${ur_control['reverse_ip']}</param>
+                    <param name="script_command_port">${ur_control['script_command_port']}</param>
+                    <param name="trajectory_port">${ur_control['trajectory_port']}</param>
+                    <param name="tf_prefix">${tf_prefix}</param>
+                    <param name="non_blocking_read">${ur_control['non_blocking_read']}</param>
+                    <param name="servoj_gain">${ur_control['servoj_gain']}</param>
+                    <param name="servoj_lookahead_time">${ur_control['servoj_lookahead_time']}</param>
+                    <param name="use_tool_communication">${ur_control['use_tool_communication']}</param>
+                    <param name="kinematics/hash">${calibration['kinematics']['hash']}</param>
+                    <param name="tool_voltage">${ur_control['tool_voltage']}</param>
+                    <param name="tool_parity">${ur_control['tool_parity']}</param>
+                    <param name="tool_baud_rate">${ur_control['tool_baud_rate']}</param>
+                    <param name="tool_stop_bits">${ur_control['tool_stop_bits']}</param>
+                    <param name="tool_rx_idle_chars">${ur_control['tool_rx_idle_chars']}</param>
+                    <param name="tool_tx_idle_chars">${ur_control['tool_tx_idle_chars']}</param>
+                    <param name="tool_device_name">${ur_control['tool_device_name']}</param>
+                    <param name="tool_tcp_port">${ur_control['tool_tcp_port']}</param>
+                    <param name="robot_receive_timeout">${ur_control['robot_receive_timeout']}</param>
+                </xacro:if>
+                <xacro:unless value="${real_hw}">
+                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                </xacro:unless>
             </hardware>
 
             <joint name="${tf_prefix}joint_shoulder_pan">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                     <param name="initial_value">${initial_positions['joint_shoulder_pan']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
 
             <joint name="${tf_prefix}joint_shoulder_lift">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                     <param name="initial_value">${initial_positions['joint_shoulder_lift']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
 
             <joint name="${tf_prefix}joint_elbow">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                 <param name="initial_value">${initial_positions['joint_elbow']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
 
             <joint name="${tf_prefix}joint_wrist_1">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                     <param name="initial_value">${initial_positions['joint_wrist_1']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
 
             <joint name="${tf_prefix}joint_wrist_2">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                     <param name="initial_value">${initial_positions['joint_wrist_2']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
 
             <joint name="${tf_prefix}joint_wrist_3">
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
+                <command_interface name="position" />
+                <command_interface name="velocity" />
                 <state_interface name="position">
                     <param name="initial_value">${initial_positions['joint_wrist_3']}</param>
                 </state_interface>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
             </joint>
+
+            <xacro:if value="${real_hw}">
+                <xacro:include filename="$(find ros2_robot_ur5e)/description/ur5e.sensor.xacro" />
+                <xacro:ur5e_sensor_args tf_prefix="${tf_prefix}" />
+                
+                <xacro:include filename="$(find ros2_robot_ur5e)/description/ur5e.gpio.xacro" />
+                <xacro:ur5e_gpio_args tf_prefix="${tf_prefix}" />
+            </xacro:if>
             
         </ros2_control>
     
